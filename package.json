@@ -1,0 +1,23 @@
+{
+  "name": "amul-kool-ecommerce",
+  "version": "1.0.0",
+  "description": "Amul Kool & Juices E-Commerce Platform with Animated Experience, Authentication, and Order Management",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "amul",
+    "ecommerce",
+    "beverages",
+    "express",
+    "nodejs"
+  ],
+  "author": "Amul Store",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}

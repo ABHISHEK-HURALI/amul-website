@@ -3,11 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const DATA_DIR = path.join(__dirname, 'data');
+const isVercel = !!process.env.VERCEL;
+const DATA_DIR = isVercel ? '/tmp' : path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
 // Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
+if (!isVercel && !fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
@@ -307,6 +308,18 @@ class AmulDatabase {
     }
 
     init() {
+        // Seeding database file in /tmp from bundled database when running on Vercel
+        if (isVercel && !fs.existsSync(DB_FILE)) {
+            const bundledDb = path.join(__dirname, 'data', 'database.json');
+            if (fs.existsSync(bundledDb)) {
+                try {
+                    fs.copyFileSync(bundledDb, DB_FILE);
+                } catch (err) {
+                    console.error("Failed to copy bundled database to /tmp:", err);
+                }
+            }
+        }
+
         if (fs.existsSync(DB_FILE)) {
             try {
                 const raw = fs.readFileSync(DB_FILE, 'utf8');

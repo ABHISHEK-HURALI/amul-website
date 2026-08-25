@@ -10,7 +10,7 @@ window.addEventListener("resize", function () {
     render();
 });
 
-const frameCount = 210;
+const frameCount = 126;
 const currentFrame = (index) =>
     `./frames/ezgif-frame-${(index + 1).toString().padStart(3, "0")}.jpg`;
 
@@ -20,29 +20,50 @@ const airbnb = {
 };
 
 let imagesLoaded = 0;
+let isLoaderHidden = false;
+
+function hideLoader() {
+    if (isLoaderHidden) return;
+    isLoaderHidden = true;
+    const loader = document.querySelector("#loader");
+    if (loader) {
+        gsap.to(loader, {
+            opacity: 0,
+            duration: 0.8,
+            onComplete: () => {
+                loader.style.display = "none";
+                startAnimation();
+            }
+        });
+    } else {
+        startAnimation();
+    }
+}
+
+function handleImageLoad() {
+    imagesLoaded++;
+    const progress = Math.min(100, Math.round((imagesLoaded / frameCount) * 100));
+    const progressBar = document.querySelector(".loader-progress");
+    const loaderText = document.querySelector("#loader-text");
+    if (progressBar) progressBar.style.width = progress + "%";
+    if (loaderText) loaderText.innerText = `PREPARING EXPERIENCE ${progress}%`;
+
+    if (imagesLoaded >= frameCount) {
+        hideLoader();
+    }
+}
 
 function preloader() {
+    // Safety fallback timeout: hide loader after 3s max
+    setTimeout(() => {
+        hideLoader();
+    }, 3000);
+
     for (let i = 0; i < frameCount; i++) {
         const img = new Image();
+        img.onload = handleImageLoad;
+        img.onerror = handleImageLoad;
         img.src = currentFrame(i);
-        img.onload = () => {
-            imagesLoaded++;
-            const progress = Math.round((imagesLoaded / frameCount) * 100);
-            document.querySelector(".loader-progress").style.width = progress + "%";
-            document.querySelector("#loader-text").innerText = `PREPARING EXPERIENCE ${progress}%`;
-            
-            if (imagesLoaded === frameCount) {
-                gsap.to("#loader", {
-                    opacity: 0,
-                    duration: 1,
-                    delay: 0.5,
-                    onComplete: () => {
-                        document.querySelector("#loader").style.display = "none";
-                        startAnimation();
-                    }
-                });
-            }
-        };
         images.push(img);
     }
 }
@@ -72,15 +93,17 @@ function startAnimation() {
         }
     });
 
-    images[0].onload = render;
     render();
 }
 
 function render() {
-    scaleImage(images[airbnb.frame], context);
+    if (images[airbnb.frame]) {
+        scaleImage(images[airbnb.frame], context);
+    }
 }
 
 function scaleImage(img, ctx) {
+    if (!img || !img.complete || !img.width || !img.height) return;
     var canvas = ctx.canvas;
     var hRatio = canvas.width / img.width;
     var vRatio = canvas.height / img.height;

@@ -208,11 +208,16 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`=============================================`);
-    console.log(`🍦 Amul Full-Stack E-Commerce Server Running!`);
-    console.log(`📍 Local URL: http://localhost:${PORT}`);
-    console.log(`💾 Database: Connected (data/database.json)`);
-    console.log(`=============================================`);
-});
+// Export app for Vercel Serverless environment
+module.exports = app;
+
+// Start Server only if run directly (local dev)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`=============================================`);
+        console.log(`🍦 Amul Full-Stack E-Commerce Server Running!`);
+        console.log(`📍 Local URL: http://localhost:${PORT}`);
+        console.log(`💾 Database: Connected (data/database.json)`);
+        console.log(`=============================================`);
+    });
+}

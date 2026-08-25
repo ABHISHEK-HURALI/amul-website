@@ -24,7 +24,7 @@ npm install
 ```bash
 npm start
 ```
-The server will run at [http://localhost:5500](http://localhost:5500).
+The server will run at https://amul-website-whz2.onrender.com/
 
 ---
 

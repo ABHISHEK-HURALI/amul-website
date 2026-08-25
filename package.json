@@ -1,6 +1,6 @@
 {
   "name": "amul-kool-ecommerce",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Amul Kool & Juices E-Commerce Platform with Animated Experience, Authentication, and Order Management",
   "main": "server.js",
   "scripts": {

@@ -4,11 +4,13 @@ const path = require('path');
 const crypto = require('crypto');
 
 const isVercel = !!process.env.VERCEL;
-const DATA_DIR = isVercel ? '/tmp' : path.join(__dirname, 'data');
+const isRender = !!process.env.RENDER;
+const useTemp = isVercel || isRender;
+const DATA_DIR = useTemp ? '/tmp' : path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
 // Ensure data directory exists
-if (!isVercel && !fs.existsSync(DATA_DIR)) {
+if (!useTemp && !fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
@@ -308,8 +310,8 @@ class AmulDatabase {
     }
 
     init() {
-        // Seeding database file in /tmp from bundled database when running on Vercel
-        if (isVercel && !fs.existsSync(DB_FILE)) {
+        // Seeding database file in /tmp from bundled database when running on Vercel or Render
+        if (useTemp && !fs.existsSync(DB_FILE)) {
             const bundledDb = path.join(__dirname, 'data', 'database.json');
             if (fs.existsSync(bundledDb)) {
                 try {
